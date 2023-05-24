@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Learning Widgets</title>
+
+    <link rel="stylesheet" href="cart.css">
+</head>
+<body onload="initVals()">
+    <main id="cart-main">
+        <div class="site-title text-center">
+            <h1 class="font-title">Your Cart</h1>
+        </div>
+
+        <div class="container">
+            <div class="grid">
+                <div class="col-1">
+                    <div class="flex item justify-content-between">
+                        <div class="flex">
+                            <h3>Lucky Talisman</h3>
+                            <div class="img text-center">
+                                <img src="/images/turquoise-talisman.jpg" alt="Turquoise Talisman">
+                            </div>
+                            <div class="title">
+                                <!-- <h3>Paypal Checkout</h3> -->
+                                <div>
+                                    <span>Price</span>
+                                    <h4 id="price" class="text">$100</h4>
+                                </div>        
+                                <div class="buttons">
+                                    <!-- <button type="submit"><i class="fas fa-chevron-up"></i> </button> -->
+                                    <div>
+                                        <span>Enter quanitity</span>
+                                        <input id="quantity" onchange="adjustVals(this.value)" type="text" class="font-title" value="3">
+                                    </div>
+                                    <!-- <button type="submit"><i class="fas fa-chevron-down"></i> </button> -->
+                                </div>
+                                <div>
+                                    <a href="#">Save for later</a> |
+                                    <a href="#">Delete</a>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="subtotal text-center">
+                        <h3>Price Details</h3>
+
+                        <ul>
+                            <li class="flex justify-content-between">
+                                <label for="price">Price</label>
+                                <span id="pd_price">$100</span>
+                            </li>
+                            <li class="flex justify-content-between">
+                                <label>Quantity</label>
+                                <span id="pd_quantity">3</span>
+                            </li>
+                            <li class="flex justify-content-between">
+                                <label for="price">Shipping & handling: </label>
+                                <span>Free</span>
+                            </li>
+                            <hr>
+                            <li class="flex justify-content-between">
+                                <label for="price">Total: </label>
+                                <span id="pd_total" class="text font-title">$300</span>
+                            </li>
+                        </ul>
+                        <br/><hr><br/>
+                        <h3>Buy Now</h3>
+                        <div id="paypal-payment-button">
+                        </div>
+                        <!--<div id="payment_options"></div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    function initVals() {
+        document.getElementById("price").innerHTML = "100";
+        document.getElementById("pd_price").innerHTML = "100";
+         document.getElementById("quantity").value = "1";
+        adjustVals(1);
+     }
+
+    function adjustVals(newVal) {
+        let quantity = parseInt(newVal);
+        if (isNaN(quantity)) {
+            return;
+        }
+        document.getElementById("pd_quantity").innerHTML = quantity.toString();
+        let price = parseInt(document.getElementById("price").innerHTML);
+        document.getElementById("pd_total").innerHTML = (price * quantity).toString();
+    }
+
+    </script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AYwy2IZqpq5O0HkL4aRU0oW9HFEElm2tGozZzRqr4aY422QU-24Ybvh3x9Oc4fnnrr6pwOPgZRCLNPrc"></script>
+    <script src="cart.js"></script>
+</body>
+</html>
