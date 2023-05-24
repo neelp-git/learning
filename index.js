@@ -109,31 +109,19 @@ app.post('/complete_order', async (req, res) => {
 
 //Servers the index.html file
 app.get('/', (req, res) => {
-    //res.sendFile(process.cwd() + '/index.html');
     res.sendFile(process.cwd() + '/cart.html');
-
 });
 app.get('/cartsuccess.html', (req, res) => {
-    //res.sendFile(process.cwd() + '/index.html');
     res.sendFile(process.cwd() + '/cartsuccess.html');
-
 });
 app.get('/cartcancel.html', (req, res) => {
-    //res.sendFile(process.cwd() + '/index.html');
     res.sendFile(process.cwd() + '/cartcancel.html');
-
 });
-//Servers the style.css file
-app.get('/style.css', (req, res) => {
-    res.sendFile(process.cwd() + '/style.css');
-});
+//Servers the css file
 app.get('/cart.css', (req, res) => {
     res.sendFile(process.cwd() + '/cart.css');
 });
-//Servers the script.js file
-app.get('/script.js', (req, res) => {
-    res.sendFile(process.cwd() + '/script.js');
-});
+//Servers the cart.js file
 app.get('/cart.js', (req, res) => {
     res.sendFile(process.cwd() + '/cart.js');
 });
@@ -156,6 +144,40 @@ async function get_access_token() {
     
     return json.access_token;
 }
+
+// BRAINTREE SECTION BEGIN
+import braintree from 'braintree';
+
+app.post('/bt-checkout', (req, res, next) => {
+  const gateway = new braintree.BraintreeGateway({
+    environment: braintree.Environment.Sandbox,
+    // Use your own credentials from the sandbox Control Panel here
+    merchantId:  process.env.BT_MERCHANT_ID,
+    publicKey: process.env.BT_PUBLIC_KEY,
+    privateKey: process.env.BT_PRIVATE_KEY,
+  });
+
+  // Use the payment method nonce here
+  const nonceFromTheClient = req.body.paymentMethodNonce;
+  const amountFromTheClient = req.body.amount;
+  // Create a new transaction for $10
+  const newTransaction = gateway.transaction.sale({
+    paymentMethodNonce: nonceFromTheClient,
+    amount: amountFromTheClient,
+    options: {
+      // This option requests the funds from the transaction
+      // once it has been authorized successfully
+      submitForSettlement: true
+    }
+  }, (error, result) => {
+      if (result) {
+        res.send(result);
+      } else {
+        res.status(500).send(error);
+      }
+  });
+});
+// BRAINTREE SECTION END
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
