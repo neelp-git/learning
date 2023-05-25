@@ -30,7 +30,7 @@ const endpoint_url = environment === 'sandbox' ? 'https://api-m.sandbox.paypal.c
 
 /* use async-await instead of a promise chain
 */
-async function fetchOrderJson(url, payload) {
+async function fetchResponseJson(url, payload) {
     const resp = await fetch(url, payload);
     return await resp.json();
 }
@@ -45,13 +45,13 @@ app.post('/create_order', async (req, res) => {
             'purchase_units': [{
                 'amount': {
                     'currency_code': 'USD',
-                    'value': '300.00'
+                    'value': req.body.amount,
                 }
             }]
         };
         const data = JSON.stringify(order_data_json);
 
-        const json = await fetchOrderJson(endpoint_url + '/v2/checkout/orders', { //https://developer.paypal.com/docs/api/orders/v2/#orders_create
+        const json = await fetchResponseJson(endpoint_url + '/v2/checkout/orders', { //https://developer.paypal.com/docs/api/orders/v2/#orders_create
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ app.post('/complete_order', async (req, res) => {
     try {
         const access_token = await get_access_token();
 
-        const json = await fetchOrderJson(endpoint_url + '/v2/checkout/orders/' + req.body.order_id + '/' + req.body.intent, {
+        const json = await fetchResponseJson(endpoint_url + '/v2/checkout/orders/' + req.body.order_id + '/' + req.body.intent, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -129,10 +129,11 @@ app.get('/cart.js', (req, res) => {
 
 /* using async-await instead of a promise chain 
 */
+/*
 async function get_access_token() {
     const auth = `${client_id}:${client_secret}`
     const data = 'grant_type=client_credentials'
-    res = await fetch(endpoint_url + '/v1/oauth2/token', {
+    const resp = await fetch(endpoint_url + '/v1/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -140,7 +141,22 @@ async function get_access_token() {
             },
             body: data
         });
-    json = await res.json();
+    const json = await resp.json();
+    
+    return json.access_token;
+}
+*/
+async function get_access_token() {
+    const auth = `${client_id}:${client_secret}`
+    const data = 'grant_type=client_credentials';
+    json = await fetchResponseJson(endpoint_url + '/v1/oauth2/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Basic ${Buffer.from(auth).toString('base64')}`
+            },
+            body: data
+        });
     
     return json.access_token;
 }
