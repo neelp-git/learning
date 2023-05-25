@@ -150,7 +150,8 @@ import braintree from 'braintree';
 
 app.post('/bt-checkout', (req, res, next) => {
   const gateway = new braintree.BraintreeGateway({
-    environment: braintree.Environment.Sandbox,
+    environment: (process.env.BT_ENVIRONMENT == 'production')? 
+        braintree.Environment.Production : braintree.Environment.Sandbox,
     // Use your own credentials from the sandbox Control Panel here
     merchantId:  process.env.BT_MERCHANT_ID,
     publicKey: process.env.BT_PUBLIC_KEY,
