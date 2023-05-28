@@ -105,51 +105,12 @@ app.post('/complete_order', async (req, res) => {
     }
 });
 
-// Helper / Utility functions
-
-//Servers the index.html file
-app.get('/', (req, res) => {
-    res.sendFile(process.cwd() + '/cart.html');
-});
-app.get('/cartsuccess.html', (req, res) => {
-    res.sendFile(process.cwd() + '/cartsuccess.html');
-});
-app.get('/cartcancel.html', (req, res) => {
-    res.sendFile(process.cwd() + '/cartcancel.html');
-});
-//Servers the css file
-app.get('/cart.css', (req, res) => {
-    res.sendFile(process.cwd() + '/cart.css');
-});
-//Servers the cart.js file
-app.get('/cart.js', (req, res) => {
-    res.sendFile(process.cwd() + '/cart.js');
-});
-
-
 /* using async-await instead of a promise chain 
-*/
-/*
-async function get_access_token() {
-    const auth = `${client_id}:${client_secret}`
-    const data = 'grant_type=client_credentials'
-    const resp = await fetch(endpoint_url + '/v1/oauth2/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${Buffer.from(auth).toString('base64')}`
-            },
-            body: data
-        });
-    const json = await resp.json();
-    
-    return json.access_token;
-}
 */
 async function get_access_token() {
     const auth = `${client_id}:${client_secret}`
     const data = 'grant_type=client_credentials';
-    json = await fetchResponseJson(endpoint_url + '/v1/oauth2/token', {
+    const json = await fetchResponseJson(endpoint_url + '/v1/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -161,7 +122,7 @@ async function get_access_token() {
     return json.access_token;
 }
 
-// BRAINTREE SECTION BEGIN
+// BRAINTREE SECTION
 import braintree from 'braintree';
 
 app.post('/bt-checkout', (req, res, next) => {
@@ -188,13 +149,37 @@ app.post('/bt-checkout', (req, res, next) => {
     }
   }, (error, result) => {
       if (result) {
+        console.log(result);
         res.send(result);
       } else {
+        console.log(error);
         res.status(500).send(error);
       }
   });
 });
 // BRAINTREE SECTION END
+
+// Helper / Utility functions
+
+//Serves html files
+app.get('/', (req, res) => {
+    res.sendFile(process.cwd() + '/cart.html');
+});
+app.get('/cartsuccess.html', (req, res) => {
+    res.sendFile(process.cwd() + '/cartsuccess.html');
+});
+app.get('/cartcancel.html', (req, res) => {
+    res.sendFile(process.cwd() + '/cartcancel.html');
+});
+//Serves the css file
+app.get('/cart.css', (req, res) => {
+    res.sendFile(process.cwd() + '/cart.css');
+});
+//Serves the js file
+app.get('/cart.js', (req, res) => {
+    res.sendFile(process.cwd() + '/cart.js');
+});
+
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
